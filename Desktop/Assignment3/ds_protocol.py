@@ -17,7 +17,18 @@ BIO = "bio"
 # TODO: update this named tuple to use DSP protocol keys
 DataTuple = namedtuple("DataTuple", ["username", "password", "message", "bio"])
 
+class DSPProtocol:
+    def __init__(self, user:str, password: str, bio: str=None):
+        self.user = user
+        self.password = password
+        self.bio = bio
+    
+    def join(self, user:str, password:str):
+        result = {"join": {"username": self.user, "password": self.password, "token": ":"}}
+        return result
 
+    def post(self, entry:str, timestamp: str, token: str):
+        result = 
 def extract_json(json_msg: str) -> DataTuple:
     """
     Call the json.loads function on a json string
