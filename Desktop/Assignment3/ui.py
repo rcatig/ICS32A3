@@ -5,6 +5,7 @@
 # 85952906
 from pathlib import Path
 from Profile import Profile, Post
+from ds_client import send
 
 
 def menu():
@@ -60,7 +61,15 @@ def open_menu():
 
 
 def send_menu():
-    pass
+    username = input("Enter the username of the profile: ")
+    password = input("Enter the password of the profile: ")
+    if " " in username:
+        print("Username must not contain any whitespace.")
+        send_menu()
+    if " " in password:
+        print("Password must not contain any whitespace.")
+        send_menu()
+
 def edit_menu(path):
     """The menu for editing a file."""
     print("EDIT MENU OPTIONS\n"
