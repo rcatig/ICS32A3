@@ -3,7 +3,7 @@
 # 85952906
 
 import socket
-from ds_protocol import DSPProtocol
+from ds_protocol import DSPProtocol, extract_json
 
 ADDRESS = "168.235.86.101"
 PORT = 3021
@@ -12,6 +12,7 @@ POST = "post"
 BIO = "bio"
 ERROR = "error"
 OK = "ok"
+token = None
 
 def send(server: str, port: int, username: str,
          password: str, message: str, bio: str = None):
@@ -27,32 +28,61 @@ def send(server: str, port: int, username: str,
     # TODO: return either True or False depending
     # on results of required operation
     try:
-      client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      client.connect((ADDRESS, PORT))
       if message == None and bio == None:
-        p = DSPProtocol(username, password)
-        message = p.join(username, password)
-        #msg = '{"token":"4678397c-6106-4046-aa13-2acd87ef540c", "post": {"entry": "Hello World!","timestamp": 1708989068.9272954}}'
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((ADDRESS, PORT))
+        protocol = DSPProtocol()
+        client_message = protocol.join(username, password)
         send = client.makefile("w")
         recv = client.makefile("r")
-        send.write(message + "\r\n")
+        send.write(client_message + "\r\n")
         send.flush()
-        resp = recv.readline()
+        resp = recv.readline().strip()
         print(resp)
-        print(p.extract_json(resp)[2])
-        #print(get_token(token))
+        token = extract_json(resp)[2]
+        get_token(token)
         client.close()
-      #elif bio == None:
+      elif bio == None:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((ADDRESS, PORT))
+        token = get_token()
+        protocol = DSPProtocol()
+        client_message = protocol.post(token, message)
+        send = client.makefile("w")
+        recv = client.makefile("r")
+        send.write(client_message + "\r\n")
+        send.flush()
+        resp = recv.readline().strip()
+        print(resp)
+        client.close()
+      elif bio != None and message == None:
+        print('hi')
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((ADDRESS, PORT))
+        token = get_token()
+        protocol = DSPProtocol()
+        print("yes")
+        client_message = protocol.bio(str(token), bio)
+        print(client_message)
+        send = client.makefile("w")
+        recv = client.makefile("r")
+        send.write(client_message + "\r\n")
+        send.flush()
+        resp = recv.readline().strip()
+        print(resp)
+        client.close()
+
     except:
         pass
 
 
 def get_token(user_token=None):
-    token = ""
-    if token != None:
-        token += user_token
+    global token
+    if user_token is not None:
+        token = user_token
     return token
   
-
 #send(ADDRESS, PORT, "silverstone", "fast", None)
 send(ADDRESS, PORT, "silverstone", "fast", None)
+send(ADDRESS, PORT, "silverstone", "fast", "yooo")
+send(ADDRESS, PORT, "silverstone", "fast", None, "vroom")
