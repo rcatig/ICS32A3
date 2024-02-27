@@ -13,7 +13,6 @@ def menu():
     print("MENU OPTIONS\n"
           "c - Create a file.\n"
           "o - Open an existing file.\n"
-          "s - Send profile to online server.\n"
           "q - Quit Program")
     command = input("Type command from menu options: ")
     if command.lower() == "c":
@@ -42,8 +41,8 @@ def create_menu():
             edit_menu(strpath)
         elif user_choice.lower() == "p":
             print_menu(strpath)
-        elif user_choice.lower() == "q":
-            menu()
+        #elif user_choice.lower() == "q":
+            #break
 
 
 def open_menu():
@@ -61,6 +60,7 @@ def open_menu():
 
 
 def send_menu():
+    ip_address = input("Enter the ip address of the server: ")
     username = input("Enter the username of the profile: ")
     password = input("Enter the password of the profile: ")
     if " " in username:
@@ -69,6 +69,7 @@ def send_menu():
     if " " in password:
         print("Password must not contain any whitespace.")
         send_menu()
+    send()
 
 def edit_menu(path):
     """The menu for editing a file."""
