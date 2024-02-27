@@ -12,12 +12,15 @@ def menu():
     print("MENU OPTIONS\n"
           "c - Create a file.\n"
           "o - Open an existing file.\n"
+          "s - Send profile to online server.\n"
           "q - Quit Program")
     command = input("Type command from menu options: ")
     if command.lower() == "c":
         create_menu()
     elif command.lower() == "o":
         open_menu()
+    elif command.lower() == "s":
+        send_menu()
     elif command.lower() == "q":
         return None
 
@@ -56,6 +59,8 @@ def open_menu():
         menu()
 
 
+def send_menu():
+    pass
 def edit_menu(path):
     """The menu for editing a file."""
     print("EDIT MENU OPTIONS\n"

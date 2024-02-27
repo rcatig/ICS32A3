@@ -71,7 +71,7 @@ def send(server: str, port: int, username: str,
         resp = recv.readline().strip()
         print(resp)
         client.close()
-
+        return True
     except:
         pass
 
