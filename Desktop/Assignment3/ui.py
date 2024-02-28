@@ -7,6 +7,7 @@ from pathlib import Path
 from Profile import Profile, Post
 from ds_client import send
 import socket
+import json
 
 PORT = 3021
 
@@ -21,8 +22,6 @@ def menu():
         create_menu()
     elif command.lower() == "o":
         open_menu()
-    elif command.lower() == "s":
-        send_menu()
     elif command.lower() == "q":
         return None
 
@@ -44,8 +43,6 @@ def create_menu():
             edit_menu(strpath)
         elif user_choice.lower() == "p":
             print_menu(strpath)
-        elif user_choice.lower() == "s":
-            send_menu()
         elif user_choice.lower() == "q":
             break
 
@@ -54,6 +51,7 @@ def open_menu():
     """The menu for opening a file."""
     p = input("Enter path of the profile: ")
     print(open_file(p))
+
     print("Would you like to do edit profile or print profile?")
     user_choice = input("Type 'e' to edit or 'p' to print: ")
     if user_choice.lower() == "e":
@@ -62,32 +60,6 @@ def open_menu():
         print_menu(p)
     elif user_choice.lower() == "q":
         menu()
-
-
-def send_menu(username, password, bio, post, check=None):
-    if check is None:
-        ip_address = input("Enter the ip address of the server: ")
-        user_profile = Profile(ip_address, username, password)
-        if valid_address(ip_address):
-            if " " in username:
-                print("Username must not contain any whitespace.")
-                menu()
-            if " " in password:
-                print("Password must not contain any whitespace.")
-                menu()
-            if bio.isspace() and len(bio) == 0:
-                print("Invalid bio.")
-                menu()
-            send(ip_address, PORT, username, password, None)
-            send(ip_address, PORT, username, password, None, bio)
-        else:
-            print("Invalid ip address. Try again.")
-            send_menu(username, password, bio)
-    elif check is not None:
-        ip_address = user_profile.ipaddress
-        send(ip_address, PORT, username, password, post, None)
-
-        
 
 
 def edit_menu(path):
@@ -435,7 +407,7 @@ def create_file(path, name):
                            "online server? Type 'y' for yes or "
                            "'n' for no: ")
         if user_input.lower() == "y":
-            send_menu(username, password, bio)
+            send_profile(strpath)
 
 
 def delete_file(path):
@@ -469,10 +441,15 @@ def open_file(path):
     try:
         p = Path(path)
         p.open("r")
-        result = "File has been successfully loaded."
+        print("File has been successfully loaded.")
+        user_input = input("Would you like to send data to the "
+                           "online server? Type 'y' for yes or "
+                           "'n' for no: ")
+        if user_input.lower() == "y":
+            send_profile(path)
+
     except FileNotFoundError:
         raise FileNotFoundError
-    return result
 
 
 def replace_quotes(line):
@@ -500,9 +477,9 @@ def edit_file(path, command, edit):
         u_profile.save_profile(path)
         user_input = input("Would you like to send your "
                            "post to a online server? Type "
-                           "'y' for yes or 'n' for no.")
-        if user_input.lower == "y":
-            send_menu
+                           "'y' for yes or 'n' for no: ")
+        if user_input.lower() == "y":
+            send_post(path, edit)
     if command == "-delpost":
         edit = edit - 1
         u_profile.del_post(edit)
@@ -640,6 +617,46 @@ def admin_print_file(path, command, index=None):
         for post in posts:
             result += f"{str(post)}\n"
     return result.strip()
+
+
+def send_profile(path):
+    print(path)
+    u_profile = Profile()
+    u_profile.load_profile(path)
+    username = u_profile.username
+    if " " in username:
+        print("Username can not have spaces. Please "
+              "edit through edit menu.")
+        edit_menu(path)
+    password = u_profile.password
+    if " " in username:
+        print("Password can not have spaces. Please "
+              "edit through edit menu.")
+        edit_menu(path)
+    bio = u_profile.bio
+    if bio.isspace() and len(bio) == 0:
+        print("Bio can not be empty. Please edit "
+              "thorugh edit menu.")
+        edit_menu(path)
+    address = input("Enter a valid ip address: ")
+    if valid_address:
+        u_profile.dsuserver = address
+        u_profile.save_profile(path)
+        send(address, PORT, username, password, None)
+        send(address, PORT, username, password, None, bio)
+    else:
+        print("Invalid ip address. Try again.")
+        send_profile(path)
+
+
+def send_post(path, post):
+    u_profile = Profile()
+    u_profile.load_profile(path)
+    username = u_profile.username
+    password = u_profile.password
+    address = u_profile.dsuserver
+    print(address)
+    send(address, PORT, username, password, post)
 
 
 def valid_address(address):
