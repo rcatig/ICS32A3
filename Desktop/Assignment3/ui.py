@@ -6,7 +6,9 @@
 from pathlib import Path
 from Profile import Profile, Post
 from ds_client import send
+import socket
 
+PORT = 3021
 
 def menu():
     """Main menu of options. Directs user to execute command"""
@@ -35,14 +37,17 @@ def create_menu():
     new_path = p / f
     strpath = str(new_path)
     print("Would you like to do edit profile or print profile?")
-    user_choice = input("Type 'e' to edit or 'p' to print: ")
+    user_choice = input("Type 'e' to edit or 'p' to "
+                        "print: ")
     while user_choice != "Q":
         if user_choice.lower() == "e":
             edit_menu(strpath)
         elif user_choice.lower() == "p":
             print_menu(strpath)
-        #elif user_choice.lower() == "q":
-            #break
+        elif user_choice.lower() == "s":
+            send_menu()
+        elif user_choice.lower() == "q":
+            break
 
 
 def open_menu():
@@ -59,17 +64,27 @@ def open_menu():
         menu()
 
 
-def send_menu():
-    ip_address = input("Enter the ip address of the server: ")
-    username = input("Enter the username of the profile: ")
-    password = input("Enter the password of the profile: ")
-    if " " in username:
-        print("Username must not contain any whitespace.")
-        send_menu()
-    if " " in password:
-        print("Password must not contain any whitespace.")
-        send_menu()
-    send()
+def send_menu(username, password, bio, check=None):
+    if check is None:
+        ip_address = input("Enter the ip address of the server: ")
+    elif check is not None:
+        profile = Profile(ip_address, username, password)
+        if valid_address(ip_address):
+            if " " in username:
+                print("Username must not contain any whitespace.")
+                menu()
+            if " " in password:
+                print("Password must not contain any whitespace.")
+                menu()
+            if bio.isspace() and len(bio) == 0:
+                print("Invalid bio.")
+                menu()
+            send(ip_address, PORT, username, password, None)
+            send(ip_address, PORT, username, password, None, bio)
+        else:
+            print("Invalid ip address. Try again.")
+            send_menu(username, password, bio)
+
 
 def edit_menu(path):
     """The menu for editing a file."""
@@ -412,6 +427,11 @@ def create_file(path, name):
         u_profile.save_profile(strpath)
         result = f"Profile created. Welcome {username}."
         print(result)
+        user_input = input("Would you like to send data to the "
+                           "online server? Type 'y' for yes or "
+                           "'n' for no: ")
+        if user_input.lower() == "y":
+            send_menu(username, password, bio)
 
 
 def delete_file(path):
@@ -474,6 +494,11 @@ def edit_file(path, command, edit):
         u_post = Post(edit)
         u_profile.add_post(u_post)
         u_profile.save_profile(path)
+        user_input = input("Would you like to send your "
+                           "post to a online server? Type "
+                           "'y' for yes or 'n' for no.")
+        if user_input.lower == "y":
+            send_menu
     if command == "-delpost":
         edit = edit - 1
         u_profile.del_post(edit)
@@ -611,3 +636,13 @@ def admin_print_file(path, command, index=None):
         for post in posts:
             result += f"{str(post)}\n"
     return result.strip()
+
+
+def valid_address(address):
+    try:
+        socket.inet_aton(address)
+        result = True
+        return result
+    except socket.error:
+        result = False
+        return result

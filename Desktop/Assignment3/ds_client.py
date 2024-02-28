@@ -31,7 +31,7 @@ def send(server: str, port: int, username: str,
     try:
         if message is None and bio is None:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect((ADDRESS, PORT))
+            client.connect((server, port))
             protocol = DSPProtocol()
             client_message = protocol.join(username, password)
             send = client.makefile("w")
@@ -45,7 +45,7 @@ def send(server: str, port: int, username: str,
             client.close()
         elif bio is None:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect((ADDRESS, PORT))
+            client.connect((server, port))
             token = get_token()
             protocol = DSPProtocol()
             client_message = protocol.post(token, message)
@@ -58,7 +58,7 @@ def send(server: str, port: int, username: str,
             client.close()
         elif bio is not None and message is None:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect((ADDRESS, PORT))
+            client.connect((server, port))
             token = get_token()
             protocol = DSPProtocol()
             client_message = protocol.bio(str(token), bio)
@@ -75,8 +75,11 @@ def send(server: str, port: int, username: str,
 
 
 def get_token(user_token=None):
+    """
+    Recieve token for each connection
+    to the online server.
+    """
     global token
     if user_token is not None:
         token = user_token
     return token
-
