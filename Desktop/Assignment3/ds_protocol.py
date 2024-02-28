@@ -11,7 +11,7 @@ import time
 
 class DSPProtocol:
     """
-    Format protocol to send to online server as 
+    Format protocol to send to online server as
     a dictionary.
     """
     def __init__(self, user: str = None, password:
@@ -21,7 +21,7 @@ class DSPProtocol:
 
     def join(self, user: str, password: str):
         """
-        Create message as a dictionary with a 
+        Create message as a dictionary with a
         username, password, and token generated
         from the server to join the server.
         """
@@ -43,7 +43,7 @@ class DSPProtocol:
     def bio(self, token: str, entry: str):
         """
         Create message as a dictionary with the bio
-        entry, token from the server, and timestamp 
+        entry, token from the server, and timestamp
         to add bio the server.
         """
         timestamp = time.time()

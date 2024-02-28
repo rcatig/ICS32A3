@@ -13,13 +13,15 @@ ERROR = "error"
 OK = "ok"
 token = None
 
+
 class ServerError(Exception):
     """
-    Custom exception handler that is 
+    Custom exception handler that is
     raised when there is any issue sending
     to the server.
     """
     pass
+
 
 def send(server: str, port: int, username: str,
          password: str, message: str, bio: str = None):
@@ -35,7 +37,8 @@ def send(server: str, port: int, username: str,
     # TODO: return either True or False depending
     # on results of required operation
     try:
-        if message is None and bio is None:  # User is trying to send a join message
+        if message is None and bio is None:
+            # User is trying to send a join message
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect((server, port))
             protocol = DSPProtocol()
@@ -62,7 +65,8 @@ def send(server: str, port: int, username: str,
             resp = recv.readline().strip()
             print(resp)
             client.close()
-        elif bio is not None and message is None:  # User is trying to send a bio message
+        elif bio is not None and message is None:
+            # User is trying to send a bio message
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect((server, port))
             token = get_token()

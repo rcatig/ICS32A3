@@ -11,6 +11,7 @@ import json
 
 PORT = 3021
 
+
 def menu():
     """Main menu of options. Directs user to execute command"""
     while True:
@@ -39,9 +40,9 @@ def create_menu():
     f = f"{name}.dsu"
     new_path = p / f
     strpath = str(new_path)
-    print("Would you like to do edit profile or print profile?")
+    print("Would you like to edit profile or print profile?")
     user_choice = input("Type 'e' to edit or 'p' to "
-                        "print: ")
+                        "print or 'q' to quit: ")
     if user_choice.lower() == "e":
         edit_menu(strpath)
     elif user_choice.lower() == "p":
@@ -56,25 +57,32 @@ def open_menu():
     print(open_file(p))
 
     print("Would you like to do edit profile or print profile?")
-    user_choice = input("Type 'e' to edit or 'p' to print: ")
+    user_choice = input("Type 'e' to edit or 'p' to print or "
+                        "'q' to quit: ")
     if user_choice.lower() == "e":
         edit_menu(p)
     elif user_choice.lower() == "p":
         print_menu(p)
+    elif user_choice.lower() == "q":
+        menu()
 
 
 def edit_menu(path):
     """The menu for editing a file."""
     while True:
-        print("EDIT MENU OPTIONS\n"
+        print(
+            "EDIT MENU OPTIONS\n"
             "-usr - Edit Username\n-pwd - Edit Password\n"
             "-bio - Edit Bio\n-addpost - Add Post\n-delpost "
-            "- Delete Post")
+            "- Delete Post"
+            )
         user_choice = input("What would you like to edit?\nType command "
                             "in following format like this. (-usr): ")
         if user_choice == "-delpost":
-            post_index = int(input("What post would you like to delete?"
-                                "Enter a number: "))
+            post_index = int(input(
+                "What post would you like to delete?"
+                "Enter a number: "
+                                ))
             print(edit_file(path, user_choice, post_index))
         elif user_choice.lower() in ["-usr", "-pwd", "-bio", "-addpost"]:
             user_edit = input(f"What would you like to change? ")
