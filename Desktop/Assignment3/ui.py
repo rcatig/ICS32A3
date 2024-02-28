@@ -64,11 +64,10 @@ def open_menu():
         menu()
 
 
-def send_menu(username, password, bio, check=None):
+def send_menu(username, password, bio, post, check=None):
     if check is None:
         ip_address = input("Enter the ip address of the server: ")
-    elif check is not None:
-        profile = Profile(ip_address, username, password)
+        user_profile = Profile(ip_address, username, password)
         if valid_address(ip_address):
             if " " in username:
                 print("Username must not contain any whitespace.")
@@ -84,6 +83,11 @@ def send_menu(username, password, bio, check=None):
         else:
             print("Invalid ip address. Try again.")
             send_menu(username, password, bio)
+    elif check is not None:
+        ip_address = user_profile.ipaddress
+        send(ip_address, PORT, username, password, post, None)
+
+        
 
 
 def edit_menu(path):

@@ -29,11 +29,11 @@ def send(server: str, port: int, username: str,
     # TODO: return either True or False depending
     # on results of required operation
     try:
-        if message is None and bio is None:
+        if message is None and bio is None:  # User is trying to send a join message
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect((server, port))
             protocol = DSPProtocol()
-            client_message = protocol.join(username, password)
+            client_message = protocol.JOIN(username, password)
             send = client.makefile("w")
             recv = client.makefile("r")
             send.write(client_message + "\r\n")
@@ -43,12 +43,12 @@ def send(server: str, port: int, username: str,
             token = extract_json(resp)[2]
             get_token(token)
             client.close()
-        elif bio is None:
+        elif bio is None:  # User is trying to send a post message
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect((server, port))
             token = get_token()
             protocol = DSPProtocol()
-            client_message = protocol.post(token, message)
+            client_message = protocol.POST(token, message)
             send = client.makefile("w")
             recv = client.makefile("r")
             send.write(client_message + "\r\n")
@@ -56,12 +56,12 @@ def send(server: str, port: int, username: str,
             resp = recv.readline().strip()
             print(resp)
             client.close()
-        elif bio is not None and message is None:
+        elif bio is not None and message is None:  # User is trying to send a bio message
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect((server, port))
             token = get_token()
             protocol = DSPProtocol()
-            client_message = protocol.bio(str(token), bio)
+            client_message = protocol.BIO(str(token), bio)
             send = client.makefile("w")
             recv = client.makefile("r")
             send.write(client_message + "\r\n")
