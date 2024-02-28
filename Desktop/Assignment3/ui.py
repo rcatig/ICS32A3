@@ -42,13 +42,12 @@ def create_menu():
     print("Would you like to do edit profile or print profile?")
     user_choice = input("Type 'e' to edit or 'p' to "
                         "print: ")
-    while user_choice != "Q":
-        if user_choice.lower() == "e":
-            edit_menu(strpath)
-        elif user_choice.lower() == "p":
-            print_menu(strpath)
-
-            
+    if user_choice.lower() == "e":
+        edit_menu(strpath)
+    elif user_choice.lower() == "p":
+        print_menu(strpath)
+    elif user_choice.lower() == "q":
+        menu()
 
 
 def open_menu():
@@ -62,8 +61,6 @@ def open_menu():
         edit_menu(p)
     elif user_choice.lower() == "p":
         print_menu(p)
-    elif user_choice.lower() == "q":
-        menu()
 
 
 def edit_menu(path):
@@ -119,8 +116,6 @@ def print_menu(path):
                             "Type 'yes' or 'no' to go back to main menu. ")
         if user_choice.lower() == "yes":
             edit_menu(path)
-        elif user_choice.lower() == "no":
-            menu()
 
 
 def menu_sort(path, command):
@@ -231,6 +226,9 @@ def menu_sort_admin(path, command):
 
 
 def separate_path(command):
+    """
+    Separate path from user inputted command.
+    """
     parts = command.split()
     path = []
     options = []
@@ -245,6 +243,10 @@ def separate_path(command):
 
 
 def get_path(command):
+    """
+    Save path to string to be recieved at
+    any time.
+    """
     path = ""
     path += command
     return path
@@ -458,6 +460,7 @@ def open_file(path):
 
 
 def replace_quotes(line):
+    """Replace all single quote with double."""
     single_quote = "'"
     double_quote = '"'
     x = line.replace(single_quote, double_quote)
@@ -465,6 +468,7 @@ def replace_quotes(line):
 
 
 def edit_file(path, command, edit):
+    """Edit a file."""
     u_profile = Profile()
     u_profile.load_profile(path)
     if command == "-usr":
@@ -498,6 +502,7 @@ def edit_file(path, command, edit):
 
 
 def admin_edit_file(path, command):
+    """Admin mode of editng a file."""
     if "'" in command:
         replace_quotes(command)
     index = 0
@@ -569,6 +574,7 @@ def admin_edit_file(path, command):
 
 
 def print_file(path, command, index=None):
+    """Print contents of a file."""
     u_profile = Profile()
     u_profile.load_profile(path)
     if command == "-usr":
@@ -599,6 +605,7 @@ def print_file(path, command, index=None):
 
 
 def admin_print_file(path, command, index=None):
+    """Admin mode of printing contents of a file."""
     u_profile = Profile()
     u_profile.load_profile(path)
     commands = command.split()
@@ -630,6 +637,10 @@ def admin_print_file(path, command, index=None):
 
 
 def send_profile(path):
+    """
+    Function will send the username, password,
+    and bio to server.
+    """
     u_profile = Profile()
     u_profile.load_profile(path)
     username = u_profile.username
@@ -659,6 +670,9 @@ def send_profile(path):
 
 
 def send_post(path, post):
+    """
+    Function will send post to the server.
+    """
     u_profile = Profile()
     u_profile.load_profile(path)
     username = u_profile.username
@@ -668,6 +682,9 @@ def send_post(path, post):
 
 
 def send_bio(path, bio):
+    """
+    Function will send bio to the server.
+    """
     u_profile = Profile()
     u_profile.load_profile(path)
     username = u_profile.username
@@ -677,6 +694,11 @@ def send_bio(path, bio):
 
 
 def valid_address(address):
+    """
+    Checks if the address has functionality to recieve
+    the profile and posts. Returns true if valid and
+    false if not valid.
+    """
     try:
         socket.inet_aton(address)
         result = True
