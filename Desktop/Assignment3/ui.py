@@ -5,9 +5,8 @@
 # 85952906
 from pathlib import Path
 from Profile import Profile, Post
-from ds_client import send
+from ds_client import send, ServerError
 import socket
-import json
 
 PORT = 3021
 
@@ -649,56 +648,65 @@ def send_profile(path):
     Function will send the username, password,
     and bio to server.
     """
-    u_profile = Profile()
-    u_profile.load_profile(path)
-    username = u_profile.username
-    if " " in username:
-        print("Username can not have spaces. Please "
-              "edit through edit menu.")
-        edit_menu(path)
-    password = u_profile.password
-    if " " in username:
-        print("Password can not have spaces. Please "
-              "edit through edit menu.")
-        edit_menu(path)
-    bio = u_profile.bio
-    if bio.isspace() and len(bio) == 0:
-        print("Bio can not be empty. Please edit "
-              "thorugh edit menu.")
-        edit_menu(path)
-    address = input("Enter a valid ip address: ")
-    if valid_address:
-        u_profile.dsuserver = address
-        u_profile.save_profile(path)
-        send(address, PORT, username, password, None)
-        send(address, PORT, username, password, None, bio)
-    else:
-        print("Invalid ip address. Try again.")
-        send_profile(path)
+    try:
+        u_profile = Profile()
+        u_profile.load_profile(path)
+        username = u_profile.username
+        if " " in username:
+            print("Username can not have spaces. Please "
+                "edit through edit menu.")
+            edit_menu(path)
+        password = u_profile.password
+        if " " in username:
+            print("Password can not have spaces. Please "
+                "edit through edit menu.")
+            edit_menu(path)
+        bio = u_profile.bio
+        if bio.isspace() and len(bio) == 0:
+            print("Bio can not be empty. Please edit "
+                "thorugh edit menu.")
+            edit_menu(path)
+        address = input("Enter a valid ip address: ")
+        if valid_address:
+            u_profile.dsuserver = address
+            u_profile.save_profile(path)
+            send(address, PORT, username, password, None)
+            send(address, PORT, username, password, None, bio)
+        else:
+            print("Invalid ip address. Try again.")
+            send_profile(path)
+    except ServerError as error:
+        print(error)
 
 
 def send_post(path, post):
     """
     Function will send post to the server.
     """
-    u_profile = Profile()
-    u_profile.load_profile(path)
-    username = u_profile.username
-    password = u_profile.password
-    address = u_profile.dsuserver
-    send(address, PORT, username, password, post)
+    try:
+        u_profile = Profile()
+        u_profile.load_profile(path)
+        username = u_profile.username
+        password = u_profile.password
+        address = u_profile.dsuserver
+        send(address, PORT, username, password, post)
+    except ServerError as error:
+        print(error)
 
 
 def send_bio(path, bio):
     """
     Function will send bio to the server.
     """
-    u_profile = Profile()
-    u_profile.load_profile(path)
-    username = u_profile.username
-    password = u_profile.password
-    address = u_profile.dsuserver
-    send(address, PORT, username, password, None, bio)
+    try:
+        u_profile = Profile()
+        u_profile.load_profile(path)
+        username = u_profile.username
+        password = u_profile.password
+        address = u_profile.dsuserver
+        send(address, PORT, username, password, None, bio)
+    except ServerError as error:
+        print(error)
 
 
 def valid_address(address):
