@@ -13,17 +13,21 @@ PORT = 3021
 
 def menu():
     """Main menu of options. Directs user to execute command"""
-    print("MENU OPTIONS\n"
-          "c - Create a file.\n"
-          "o - Open an existing file.\n"
-          "q - Quit Program")
-    command = input("Type command from menu options: ")
-    if command.lower() == "c":
-        create_menu()
-    elif command.lower() == "o":
-        open_menu()
-    elif command.lower() == "q":
-        return None
+    while True:
+        print("MENU OPTIONS\n"
+              "c - Create a file.\n"
+              "o - Open an existing file.\n"
+              "q - Quit Program")
+        command = input("Type command from menu options: ").lower()
+        if command == "c":
+            create_menu()
+        elif command == "o":
+            open_menu()
+        elif command == "q":
+            print("Exiting the program...")
+            break
+        else:
+            print("Invalid command. Please try again.\n")
 
 
 def create_menu():
@@ -43,8 +47,8 @@ def create_menu():
             edit_menu(strpath)
         elif user_choice.lower() == "p":
             print_menu(strpath)
-        elif user_choice.lower() == "q":
-            break
+
+            
 
 
 def open_menu():
@@ -64,31 +68,32 @@ def open_menu():
 
 def edit_menu(path):
     """The menu for editing a file."""
-    print("EDIT MENU OPTIONS\n"
-          "-usr - Edit Username\n-pwd - Edit Password\n"
-          "-bio - Edit Bio\n-addpost - Add Post\n-delpost "
-          "- Delete Post")
-    user_choice = input("What would you like to edit?\nType command "
-                        "in following format like this. (-usr): ")
-    if user_choice == "-delpost":
-        post_index = int(input("What post would you like to delete?"
-                               "Enter a number: "))
-        print(edit_file(path, user_choice, post_index))
-    elif user_choice.lower() in ["-usr", "-pwd", "-bio", "-addpost"]:
-        user_edit = input(f"What would you like to change? ")
-        print(edit_file(path, user_choice, user_edit))
-    user_choice = input("Would you like to make another edit? "
-                        "Type 'yes' to make another edit or 'no' ")
-    if user_choice.lower() == "yes":
-        edit_menu(path)
-    elif user_choice.lower() == "no":
-        user_choice = input("Would you like to print an element "
-                            "in your profile? Type 'yes' to print "
-                            "or 'no' to go back to main menu. ")
+    while True:
+        print("EDIT MENU OPTIONS\n"
+            "-usr - Edit Username\n-pwd - Edit Password\n"
+            "-bio - Edit Bio\n-addpost - Add Post\n-delpost "
+            "- Delete Post")
+        user_choice = input("What would you like to edit?\nType command "
+                            "in following format like this. (-usr): ")
+        if user_choice == "-delpost":
+            post_index = int(input("What post would you like to delete?"
+                                "Enter a number: "))
+            print(edit_file(path, user_choice, post_index))
+        elif user_choice.lower() in ["-usr", "-pwd", "-bio", "-addpost"]:
+            user_edit = input(f"What would you like to change? ")
+            print(edit_file(path, user_choice, user_edit))
+        user_choice = input("Would you like to make another edit? "
+                            "Type 'yes' to make another edit or 'no' ")
         if user_choice.lower() == "yes":
-            print_menu(path)
+            edit_menu(path)
         elif user_choice.lower() == "no":
-            menu()
+            user_choice = input("Would you like to print an element "
+                                "in your profile? Type 'yes' to print "
+                                "or 'no' to go back to main menu. ")
+            if user_choice.lower() == "yes":
+                print_menu(path)
+            elif user_choice.lower() == "no":
+                return menu()
 
 
 def print_menu(path):
@@ -471,6 +476,11 @@ def edit_file(path, command, edit):
     if command == "-bio":
         u_profile.password = edit
         u_profile.save_profile(path)
+        user_input = input("Would you like to send your "
+                           "post to a online server? Type "
+                           "'y' for yes or 'n' for no: ")
+        if user_input.lower() == "y":
+            send_post(path, edit)
     if command == "-addpost":
         u_post = Post(edit)
         u_profile.add_post(u_post)
@@ -620,7 +630,6 @@ def admin_print_file(path, command, index=None):
 
 
 def send_profile(path):
-    print(path)
     u_profile = Profile()
     u_profile.load_profile(path)
     username = u_profile.username
@@ -655,8 +664,16 @@ def send_post(path, post):
     username = u_profile.username
     password = u_profile.password
     address = u_profile.dsuserver
-    print(address)
     send(address, PORT, username, password, post)
+
+
+def send_bio(path, bio):
+    u_profile = Profile()
+    u_profile.load_profile(path)
+    username = u_profile.username
+    password = u_profile.password
+    address = u_profile.dsuserver
+    send(address, PORT, username, password, None, bio)
 
 
 def valid_address(address):

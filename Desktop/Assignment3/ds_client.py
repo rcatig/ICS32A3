@@ -6,7 +6,6 @@ import socket
 from ds_protocol import DSPProtocol, extract_json
 
 ADDRESS = "168.235.86.101"
-PORT = 3021
 JOIN = "join"
 POST = "post"
 BIO = "bio"
@@ -14,6 +13,13 @@ ERROR = "error"
 OK = "ok"
 token = None
 
+class ServerError(Exception):
+    """
+    Custom exception handler that is 
+    raised when there is any issue sending
+    to the server.
+    """
+    pass
 
 def send(server: str, port: int, username: str,
          password: str, message: str, bio: str = None):
@@ -70,8 +76,8 @@ def send(server: str, port: int, username: str,
             print(resp)
             client.close()
         return True
-    except TypeError:
-        pass
+    except ServerError:
+        return False
 
 
 def get_token(user_token=None):

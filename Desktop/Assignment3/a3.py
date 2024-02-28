@@ -35,7 +35,6 @@ def main():
                 "Welcome! Would you like to create or open "
                 "a profile? (type 'c' to create or 'o' to open): "
                 )
-    print("Exiting program.")
 
 
 if __name__ == '__main__':
