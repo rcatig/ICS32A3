@@ -5,7 +5,7 @@
 import socket
 from ds_protocol import DSPProtocol, extract_json
 
-ADDRESS = "168.235.86.101"
+
 JOIN = "join"
 POST = "post"
 BIO = "bio"

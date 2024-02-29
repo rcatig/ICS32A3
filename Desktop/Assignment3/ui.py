@@ -46,15 +46,14 @@ def create_menu():
         edit_menu(strpath)
     elif user_choice.lower() == "p":
         print_menu(strpath)
-    elif user_choice.lower() == "q":
-        menu()
+    else:
+        return menu()
 
 
 def open_menu():
     """The menu for opening a file."""
     p = input("Enter path of the profile: ")
     print(open_file(p))
-
     print("Would you like to do edit profile or print profile?")
     user_choice = input("Type 'e' to edit or 'p' to print or "
                         "'q' to quit: ")
@@ -62,8 +61,6 @@ def open_menu():
         edit_menu(p)
     elif user_choice.lower() == "p":
         print_menu(p)
-    elif user_choice.lower() == "q":
-        menu()
 
 
 def edit_menu(path):
@@ -96,7 +93,7 @@ def edit_menu(path):
                                 "or 'no' to go back to main menu. ")
             if user_choice.lower() == "yes":
                 print_menu(path)
-            elif user_choice.lower() == "no":
+            else:
                 return menu()
 
 
@@ -123,6 +120,8 @@ def print_menu(path):
                             "Type 'yes' or 'no' to go back to main menu. ")
         if user_choice.lower() == "yes":
             edit_menu(path)
+        else:
+            menu()
 
 
 def menu_sort(path, command):
@@ -456,11 +455,14 @@ def open_file(path):
         p = Path(path)
         p.open("r")
         print("File has been successfully loaded.")
-        user_input = input("Would you like to send data to the "
-                           "online server? Type 'y' for yes or "
-                           "'n' for no: ")
-        if user_input.lower() == "y":
-            send_profile(path)
+        try:
+            user_input = input("Would you like to send data to the "
+                               "online server? Type 'y' for yes or "
+                               "'n' for no: ")
+            if user_input.lower() == "y":
+                send_profile(path)
+        except ServerError as error:
+            print(error)
 
     except FileNotFoundError:
         raise FileNotFoundError
@@ -491,7 +493,7 @@ def edit_file(path, command, edit):
                            "post to a online server? Type "
                            "'y' for yes or 'n' for no: ")
         if user_input.lower() == "y":
-            send_post(path, edit)
+            send_bio(path, edit)
     if command == "-addpost":
         u_post = Post(edit)
         u_profile.add_post(u_post)
@@ -654,17 +656,17 @@ def send_profile(path):
         username = u_profile.username
         if " " in username:
             print("Username can not have spaces. Please "
-                "edit through edit menu.")
+                  "edit through edit menu.")
             edit_menu(path)
         password = u_profile.password
         if " " in username:
             print("Password can not have spaces. Please "
-                "edit through edit menu.")
+                  "edit through edit menu.")
             edit_menu(path)
         bio = u_profile.bio
         if bio.isspace() and len(bio) == 0:
             print("Bio can not be empty. Please edit "
-                "thorugh edit menu.")
+                  "thorugh edit menu.")
             edit_menu(path)
         address = input("Enter a valid ip address: ")
         if valid_address:
